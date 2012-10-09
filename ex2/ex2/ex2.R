@@ -46,10 +46,45 @@ Jcost <- function(m, theta, x, y) {
   return(cost)
 }
 
-#  Compute and display initial cost and gradient
-result <- function(theta, X, y) {
-  result.list <- as.list(cost=Jcost(m, theta, X, y), grad=theta)
-  sprintf("Cost at initial theta (zeros): %f\n", as.double(result.list[1]))
-  sprintf("Gradient at initial theta (zeros): \n%f\n", result.list[c(2:4)])
-  return(result.list)
+derivative <- function(j, x, y, m, theta) {
+  i <- 1
+  derivative.value <- 0
+  while (i <= m) {
+    derivative.value <- derivative.value + (hypothesis(x[i,], theta) - y[i]) * x[i, j]
+    i <- i + 1
+  }
+  
+  derivative.value <- (1 / m) * derivative.value
+  
+  return(derivative.value)
+}
+
+alpha <- 0.1
+iterations <- 1500
+cost.values <- rep(10000, iterations)
+sprintf("Cost at initial theta (zeros): %f", cost.values[1] <- Jcost(m, initial.theta, X, y))
+grand <- function(initial.theta, cost.values, x, y, m) {
+  theta <- initial.theta
+  theta.len <- length(theta)
+  
+  i <- 1
+  while (i < iterations) {
+    j <- 1
+    new.theta <- theta
+    while (j <= theta.len) {
+      new.theta[j] <- new.theta[j] - alpha * derivative(j, x, y, m, theta)
+      j <- j+1
+    }
+  
+    new.cost <- Jcost(m, new.theta, x, y)
+    if (new.cost < cost.values[i]) {
+      initial.theta <- new.theta
+    }
+    
+    i <- i + 1
+    theta <- new.theta
+    cost.values[i] <- new.cost
+  }
+  sprintf("initial.theta = %f", initial.theta)
+  return(min(cost.values), initial.theta)
 }
