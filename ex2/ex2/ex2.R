@@ -38,7 +38,19 @@ Jcost <- function(m, theta, x, y) {
   i <- 1
   cost <- 0;
   while (i <= m) {
-    cost <- cost + y[i] * log(hypothesis(X[i,], theta)) + (1 - y[i]) * log(1 - hypothesis(X[i,], theta))
+    diff <- 0
+    if (y[i] == 0) {
+      diff <- 1 - hypothesis(x[i,], theta)
+    } else if (y[i] == 1) {
+      diff <- hypothesis(x[i,], theta)
+    }
+    
+    if (diff > 0) {
+      cost <- cost + log(diff)
+    } else {
+      cost <- -10000
+    }
+    
     i <- i + 1;
   }
   cost <- (-1/m) * cost
@@ -62,13 +74,15 @@ derivative <- function(j, x, y, m, theta) {
 alpha <- 0.1
 iterations <- 1500
 cost.values <- rep(10000, iterations)
-sprintf("Cost at initial theta (zeros): %f", cost.values[1] <- Jcost(m, initial.theta, X, y))
+
 grand <- function(initial.theta, cost.values, x, y, m) {
   theta <- initial.theta
   theta.len <- length(theta)
+  cost.values[1] <- Jcost(m, initial.theta, x, y)
+  
   
   i <- 1
-  while (i < iterations) {
+  while (i <= iterations) {
     j <- 1
     new.theta <- theta
     while (j <= theta.len) {
@@ -85,6 +99,7 @@ grand <- function(initial.theta, cost.values, x, y, m) {
     theta <- new.theta
     cost.values[i] <- new.cost
   }
-  sprintf("initial.theta = %f", initial.theta)
-  return(min(cost.values), initial.theta)
+  
+  result <- c(min(cost.values), initial.theta)
+  return(result)
 }
